@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ShopMart - Your One Stop Shop</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    .search-section, .products, .review-section {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin: 20px;
+      padding: 20px;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+    }
+    .search-section h2,
+    .review-section h2 {
+      margin-top: 0;
+    }
+    .products {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .product {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin: 10px;
+      padding: 15px;
+      width: 220px;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+    }
+    .product h2 {
+      font-size: 18px;
+      margin: 0 0 10px;
+    }
+    .product p {
+      font-size: 16px;
+      margin: 5px 0;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+  <script>
+    // Declare the flag variable early so it's available to all scripts.
+    const flag = ":HAcker101!";
+  </script>
+</head>
+<body>
+  <header>
+    <h1>ShopMart</h1>
+    <p>Your one-stop shop for the best tech products!</p>
+  </header>
+
+  <!-- Search Feature (Vulnerable) -->
+  <section class="search-section">
+    <h2>Search Products</h2>
+    <form method="GET" action="">
+      <input type="text" name="search" placeholder="Search for products">
+      <button type="submit">Search</button>
+    </form>
+    <div id="search-output"></div>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchQuery = urlParams.get('search');
+      if (searchQuery) {
+        // Check if the search input contains any HTML tags.
+        const htmlTagRegex = /<[^>]+>/;
+        if (htmlTagRegex.test(searchQuery)) {
+          // If HTML is injected, trigger an alert displaying the flag.
+          alert(flag);
+        }
+        // Vulnerable output: unsanitized insertion into the page.
+        document.getElementById('search-output').innerHTML = "You searched for: " + searchQuery;
+      }
+    </script>
+  </section>
+
+  <!-- Products Section -->
+  <section class="products">
+    <div class="product">
+      <h2>Wireless Mouse</h2>
+      <p>Price: $25.99</p>
+    </div>
+    <div class="product">
+      <h2>Mechanical Keyboard</h2>
+      <p>Price: $75.99</p>
+    </div>
+    <div class="product">
+      <h2>USB-C Hub</h2>
+      <p>Price: $45.99</p>
+    </div>
+  </section>
+
+  <!-- Review Feature (Secured) -->
+  <section class="review-section">
+    <h2>Leave a Review</h2>
+    <form method="GET" action="">
+      <textarea name="review" rows="4" placeholder="Write your review here..."></textarea>
+      <button type="submit">Submit</button>
+    </form>
+    <div id="user-review"></div>
+    <script>
+      const reviewQuery = urlParams.get('review');
+      if (reviewQuery) {
+        // Secure output: using textContent to ensure HTML tags are not interpreted.
+        document.getElementById('user-review').textContent = reviewQuery;
+      }
+    </script>
+  </section>
+</body>
+</html>
