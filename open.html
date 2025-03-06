@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Signup with Open Redirect Vulnerability</title>
+  <style>
+    /* Basic styling for the signup form */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f4f4f4;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background: #5cb85c;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #4cae4c;
+    }
+    #message {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #333;
+    }
+  </style>
+  <script>
+    // Utility function to extract a query parameter's value from the URL
+    function getQueryParam(name, url = window.location.href) {
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    // Handle the signup form submission
+    function handleSignup(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      // Retrieve data from the form fields
+      var username = document.getElementById('username').value;
+      var email = document.getElementById('email').value;
+      var password = document.getElementById('password').value;
+
+      // Save the signup data locally (using localStorage)
+      var signupData = {
+        username: username,
+        email: email,
+        password: password // Warning: storing passwords in plain text is insecure
+      };
+
+      // Save the data under the key 'signupData'
+      localStorage.setItem('signupData', JSON.stringify(signupData));
+
+      // Check if a "redirect" parameter is provided in the URL
+      var redirectUrl = getQueryParam('redirect');
+      if (redirectUrl) {
+        // Vulnerable open redirect: No validation on the user-supplied redirect URL.
+        window.location.href = redirectUrl;
+      } else {
+        // If no redirect is provided, display a simple message.
+        document.getElementById('message').innerText = 'Signup successful! No redirect URL provided.';
+      }
+    }
+
+    // Attach the form submission event when the DOM is loaded
+    window.onload = function() {
+      document.getElementById('signupForm').addEventListener('submit', handleSignup);
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Signup Page</h1>
+    <p id="message"></p>
+    <form id="signupForm">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+</body>
+</html>
